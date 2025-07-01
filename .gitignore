@@ -1,35 +1,32 @@
-# Composer
+# Ignorer les dépendances Composer
 /vendor/
-/composer.lock
+composer.lock
 
-# Systèmes d'exploitation
-.DS_Store
-Thumbs.db
-
-# IDE et éditeurs
-*.sublime-project
-*.sublime-workspace
-.idea/
-.vscode/
-
-# Logs
-*.log
-
-# Environnements
+# Ignorer les fichiers d'environnement
 .env
-.env.local
-.env.*.local
+.env.*
 
-# Cache et fichiers temporaires
+# Caches et logs
+*.log
 .cache/
 tmp/
 *.tmp
+
+# IDE / éditeurs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Systèmes d’exploitation
+.DS_Store
+Thumbs.db
 
 # PHPUnit
 .phpunit.result.cache
 coverage/
 
-# Autres fichiers potentiellement sensibles ou inutiles
+# Fichiers temporaires
 *.bak
 *.swp
 *.orig
