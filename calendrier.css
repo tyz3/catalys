@@ -1,0 +1,136 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 0;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.calendar-container {
+  background: white;
+  padding: 20px 25px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  text-align: center;
+  width: 90vw;
+  max-width: 1200px;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+table.calendar {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  flex-grow: 1;
+}
+
+table.calendar th, table.calendar td {
+  border: 1px solid #ddd;
+  vertical-align: top;
+  overflow: auto;
+}
+
+table.calendar th {
+  background-color: #007BFF;
+  color: white;
+  user-select: none;
+  font-size: 0.75em;
+  padding: 2px;
+  line-height: 1;
+  height: 30px;
+}
+
+table.calendar td {
+  height: 110px;
+  padding: 10px;
+}
+
+.jour-nom {
+  font-weight: 600;
+  font-size: 0.9em;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.jour-date {
+  font-size: 0.75em;
+  color: #eee;
+  margin: 0;
+  line-height: 1;
+}
+
+td.jour {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.evenement {
+  background-color: #e3f2fd;
+  margin: 3px 0;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  word-break: break-word;
+}
+
+.evenement form {
+  margin: 0;
+}
+
+.evenement button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0 5px;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.evenement button:hover {
+  background: #c0392b;
+}
+
+.form-evenement {
+  margin-top: 5px;
+}
+
+.form-evenement input[type="text"] {
+  width: 80%;
+}
+
+.navigation {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.navigation a {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 6px 12px;
+  background-color: #007BFF;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.navigation a:hover {
+  background-color: #0056b3;
+}

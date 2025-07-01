@@ -1,0 +1,35 @@
+# Composer
+/vendor/
+/composer.lock
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+
+# IDE et éditeurs
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Environnements
+.env
+.env.local
+.env.*.local
+
+# Cache et fichiers temporaires
+.cache/
+tmp/
+*.tmp
+
+# PHPUnit
+.phpunit.result.cache
+coverage/
+
+# Autres fichiers potentiellement sensibles ou inutiles
+*.bak
+*.swp
+*.orig
