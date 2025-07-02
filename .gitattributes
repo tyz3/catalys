@@ -1,3 +1,4 @@
 vendor/*** filter=lfs diff=lfs merge=lfs -text
 vendor/** filter=lfs diff=lfs merge=lfs -text
 données/** filter=lfs diff=lfs merge=lfs -text
+data/** filter=lfs diff=lfs merge=lfs -text

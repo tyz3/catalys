@@ -1,136 +1,201 @@
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f5f7fa;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 0;
-  min-height: 100vh;
-  margin: 0;
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f5f7fa;
 }
 
 .calendar-container {
-  background: white;
-  padding: 20px 25px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  text-align: center;
-  width: 90vw;
-  max-width: 1200px;
-  min-height: 80vh;
-  display: flex;
-  flex-direction: column;
-}
-
-h2 {
-  margin-bottom: 20px;
-  font-weight: 600;
-  color: #333;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
 table.calendar {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  flex-grow: 1;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    position: relative;
 }
 
-table.calendar th, table.calendar td {
-  border: 1px solid #ddd;
-  vertical-align: top;
-  overflow: auto;
+th, td {
+    border: 1px solid #ccc;
+    vertical-align: top;
+    height: 720px; /* 12h * 60min = 720px (1min = 1px) */
+    padding: 0;
 }
 
-table.calendar th {
-  background-color: #007BFF;
-  color: white;
-  user-select: none;
-  font-size: 0.75em;
-  padding: 2px;
-  line-height: 1;
-  height: 30px;
+th {
+    height: auto;
+    background: #007BFF;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 0;
 }
 
-table.calendar td {
-  height: 110px;
-  padding: 10px;
+.heure-col {
+    width: 50px;
+    background: #f0f0f0;
+    border-right: 1px solid #ccc;
+    text-align: right;
+    padding-right: 5px;
+    user-select: none;
+    font-size: 0.8em;
 }
 
-.jour-nom {
-  font-weight: 600;
-  font-size: 0.9em;
-  margin: 0;
-  line-height: 1.1;
+.jour-col {
+    width: calc((100% - 50px) / 5);
+    position: relative;
+    background: #fafafa;
 }
 
-.jour-date {
-  font-size: 0.75em;
-  color: #eee;
-  margin: 0;
-  line-height: 1;
-}
-
-td.jour {
-  font-weight: bold;
-  margin-bottom: 5px;
+.jour-col div {
+    height: 60px;
+    border-bottom: 1px solid #eee;
 }
 
 .evenement {
-  background-color: #e3f2fd;
-  margin: 3px 0;
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-size: 0.9em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  word-break: break-word;
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    background: #4a90e2;
+    color: white;
+    border-radius: 5px;
+    padding: 4px 6px;
+    font-size: 0.85em;
+    overflow: hidden;
+    box-sizing: border-box;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
+    overflow-wrap: break-word;
+    user-select: none;
+}
+
+.evenement:hover {
+    background: #357ABD;
 }
 
 .evenement form {
-  margin: 0;
+    margin: 5px 0 0 0;
+    text-align: right;
 }
 
 .evenement button {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  padding: 0 5px;
-  font-weight: bold;
-  font-size: 0.9em;
-}
-
-.evenement button:hover {
-  background: #c0392b;
-}
-
-.form-evenement {
-  margin-top: 5px;
-}
-
-.form-evenement input[type="text"] {
-  width: 80%;
+    background: #e74c3c;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 0 6px;
+    line-height: 1.2em;
 }
 
 .navigation {
-  margin-bottom: 20px;
-  text-align: center;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .navigation a {
-  display: inline-block;
-  margin: 0 10px;
-  padding: 6px 12px;
-  background-color: #007BFF;
-  color: white;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background 0.2s ease;
+    margin: 0 10px;
+    text-decoration: none;
+    color: #007BFF;
+    font-weight: bold;
 }
 
 .navigation a:hover {
-  background-color: #0056b3;
+    text-decoration: underline;
 }
+
+.calendar-container {
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.evenement {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    background: #7ab8f5;
+    color: #000;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    overflow: hidden;
+}
+
+.heure-col {
+    width: 60px;
+    vertical-align: top;
+    border-right: 1px solid #ccc;
+    padding: 0 5px;
+    font-size: 0.8em;
+}
+
+.jour-col {
+    width: 160px;
+    vertical-align: top;
+    border-right: 1px solid #ccc;
+    position: relative;
+}
+
+table.calendar {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+table.calendar th, table.calendar td {
+    border: 1px solid #ccc;
+    height: 720px; /* 12h * 60px */
+    position: relative;
+}
+
+.navigation a {
+    margin: 0 10px;
+}
+
+/* Début des ajouts pour la popup */
+
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);    align-items: center;
+    z-index: 999;
+    display: flex;
+}
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    border: 2px solid #007BFF; /* bordure bleue visible */
+}
+
+
+.close-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Curseur pointer pour événements cliquables */
+
+.evenement {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Fin des ajouts pour la popup */
