@@ -117,13 +117,12 @@ table.calendar {
     height: 60px;
     line-height: 60px;
     font-size: 14px;
-    border-bottom: 1px solid #e2e8f0;
 }
 
-.evenement {
+.evenement, .event {
     position: absolute;
-    left: 4px;
-    right: 4px;
+    left: 5px;
+    right: 5px;
     background-color: #22c55e;
     color: white;
     padding: 6px 10px;
@@ -133,15 +132,18 @@ table.calendar {
     box-shadow: 0 2px 8px rgba(34, 197, 94, 0.5);
     cursor: pointer;
     transition: background-color 0.2s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.evenement:hover {
+.evenement:hover, .event:hover {
     background-color: #16a34a;
     box-shadow: 0 4px 12px rgba(22, 163, 74, 0.7);
 }
 
 .popup-overlay {
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.5);
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -151,15 +153,13 @@ table.calendar {
 }
 
 .popup-content {
-    background-color: #ffffff;
-    padding: 28px 36px;
-    border-radius: 16px;
+    background-color: white;
+    padding: 24px 30px;
+    border-radius: 14px;
     min-width: 320px;
-    max-width: 460px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    max-width: 420px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     position: relative;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #334155;
 }
 
 .close-btn {
