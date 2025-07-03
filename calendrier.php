@@ -1,25 +1,19 @@
 <?php
 session_start();
-
 try {
     $pdo = new PDO('sqlite:' . __DIR__ . '/données/agenda.sqlite');
 } catch (PDOException $e) {
     die("Erreur connexion base : " . $e->getMessage());
 }
-
 $stmt = $pdo->query('SELECT DISTINCT conseiller FROM seances WHERE conseiller IS NOT NULL AND conseiller != "" ORDER BY conseiller');
 $conseillers = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
 if (empty($conseillers)) {
     die("Aucun conseiller trouvé en base.");
 }
-
 $conseillerSelectionne = $_GET['conseiller'] ?? $_POST['conseiller'] ?? $conseillers[0];
-
 if (!isset($_SESSION['evenements'])) {
     $_SESSION['evenements'] = [];
 }
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date = $_POST['date'] ?? null;
     $evenement = trim($_POST['evenement'] ?? '');
@@ -27,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $heureFin = $_POST['heurefin'] ?? '';
     $delete = $_POST['delete'] ?? null;
     $conseiller = $_POST['conseiller'] ?? $conseillerSelectionne;
-
     if ($date && $conseiller && $evenement !== '' && $delete === null) {
         $_SESSION['evenements'][$conseiller][$date][] = [
             'heuredebut' => $heureDebut,
@@ -35,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'texte' => $evenement,
         ];
     }
-
     if ($date && $conseiller && $delete !== null && isset($_SESSION['evenements'][$conseiller][$date][$delete])) {
         unset($_SESSION['evenements'][$conseiller][$date][$delete]);
         $_SESSION['evenements'][$conseiller][$date] = array_values($_SESSION['evenements'][$conseiller][$date]);
@@ -44,38 +36,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
 $semaine = (int)($_GET['semaine'] ?? 0);
 $ajd = new DateTime();
-
 if (!empty($_GET['dateChoisie'])) {
     $dateChoisie = DateTime::createFromFormat('Y-m-d', $_GET['dateChoisie']);
     if ($dateChoisie) {
         $ajd = clone $dateChoisie;
     }
 }
-
 $ajd->modify("{$semaine} weeks");
 $ajd->modify('-' . ($ajd->format('N') - 1) . ' days');
-
 $jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
-
 $debutSemaine = $ajd->format('Y-m-d');
 $finSemaine = (clone $ajd)->modify('+4 days')->format('Y-m-d');
-
 $sql = "SELECT date, heuredebut, heurefin, objet FROM seances 
         WHERE conseiller = :conseiller 
           AND date(date) BETWEEN :debutSemaine AND :finSemaine
           AND (seanceannulee IS NULL OR seanceannulee = 0)
           AND objet IS NOT NULL AND objet != ''";
-
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
     ':conseiller' => $conseillerSelectionne,
     ':debutSemaine' => $debutSemaine,
     ':finSemaine' => $finSemaine,
 ]);
-
 $evenementsBase = [];
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $dateKey = substr($row['date'], 0, 10);
@@ -88,7 +72,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         'texte' => $row['objet'],
     ];
 }
-
 function heureToMinutes(string $heure): int {
     $parts = explode(':', $heure);
     return ((int)($parts[0] ?? 0) * 60) + ((int)($parts[1] ?? 0));
@@ -102,6 +85,7 @@ function heureToMinutes(string $heure): int {
     <title>Agenda de <?= htmlspecialchars($conseillerSelectionne) ?></title>
     <link rel="stylesheet" href="calendrier.css" />
 </head>
+
 <body>
 
 <div class="calendar-container">
@@ -138,8 +122,7 @@ function heureToMinutes(string $heure): int {
             <tr>
                 <th class="heure-col"></th>
                 <?php for ($i = 0; $i < 5; $i++):
-                    $jour = (clone $ajd)->modify("+$i days");
-                    ?>
+                    $jour = (clone $ajd)->modify("+$i days"); ?>
                     <th class="jour-col"><?= $jours[$i] ?><br><?= $jour->format('d/m') ?></th>
                 <?php endfor; ?>
             </tr>
@@ -151,11 +134,10 @@ function heureToMinutes(string $heure): int {
                         <div style="height:60px; line-height:60px;"><?= $h ?>:00</div>
                     <?php endfor; ?>
                 </td>
-
                 <?php for ($i = 0; $i < 5; $i++):
                     $jour = (clone $ajd)->modify("+$i days");
                     $d = $jour->format('Y-m-d'); ?>
-                    <td class="jour-col" style="position: relative;">
+                    <td class="jour-col">
 
                         <?php
                         $evenementsAffiches = [];
@@ -180,15 +162,15 @@ function heureToMinutes(string $heure): int {
                             $top = (heureToMinutes($debut) - 480);
                             $height = max(heureToMinutes($fin) - heureToMinutes($debut), 30);
                             ?>
-                            <div class="evenement" 
-                                style="top:<?= $top ?>px; height:<?= $height ?>px; cursor:pointer;" 
-                                onclick='afficherPopup(<?= json_encode([
-                                    'date' => $d,
-                                    'heuredebut' => $debut,
-                                    'heurefin' => $fin,
-                                    'objet' => $ev['texte'],
-                                    'conseiller' => $conseillerSelectionne,
-                                ], JSON_HEX_APOS | JSON_UNESCAPED_UNICODE) ?>)'>
+                            <div class="evenement"
+                                 style="top:<?= $top ?>px; height:<?= $height ?>px; cursor:pointer;"
+                                 onclick='afficherPopup(<?= json_encode([
+                                     'date' => $d,
+                                     'heuredebut' => $debut,
+                                     'heurefin' => $fin,
+                                     'objet' => $ev['texte'],
+                                     'conseiller' => $conseillerSelectionne,
+                                 ], JSON_HEX_APOS | JSON_UNESCAPED_UNICODE) ?>)'>
                                 <strong><?= htmlspecialchars($debut . ' - ' . $fin) ?></strong><br>
                                 <?= htmlspecialchars($ev['texte']) ?>
                             </div>
@@ -198,16 +180,14 @@ function heureToMinutes(string $heure): int {
             </tr>
         </tbody>
     </table>
-
 </div>
 
-<!-- POPUP -->
-<div id="popup" class="popup-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0;  justify-content:center; align-items:center; border:20px">
-  <div class="popup-content">
-    <span class="close-btn">×</span>
-    <h3>Détail de l'événement</h3>
-    <div id="popup-details"></div>
-  </div>
+<div id="popup" class="popup-overlay">
+    <div class="popup-content">
+        <span class="close-btn">×</span>
+        <h3>Détail de l'événement</h3>
+        <div id="popup-details"></div>
+    </div>
 </div>
 
 <script>
@@ -222,11 +202,9 @@ function afficherPopup(data) {
     `;
     popup.style.display = 'flex';
 }
-
 document.querySelector('#popup .close-btn').addEventListener('click', () => {
     document.getElementById('popup').style.display = 'none';
 });
-
 document.getElementById('popup').addEventListener('click', e => {
     if (e.target.id === 'popup') {
         e.target.style.display = 'none';

@@ -1,201 +1,232 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: 100%;
     background: #f5f7fa;
 }
 
 .calendar-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    height: 100vh;
+    padding: 1.5em;
+    box-sizing: border-box;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(100, 110, 140, 0.15);
+    overflow: hidden;
+}
+
+.navigation {
+    margin-bottom: 1.5em;
+    display: flex;
+    justify-content: center;
+    gap: 1.2em;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.navigation a {
+    color: #64748b;
+    text-decoration: none;
+    padding: 8px 18px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(100, 110, 140, 0.1);
+}
+
+.navigation a:hover {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #2563eb;
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
 }
 
 table.calendar {
     width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    position: relative;
-}
-
-th, td {
-    border: 1px solid #ccc;
-    vertical-align: top;
-    height: 720px; /* 12h * 60min = 720px (1min = 1px) */
-    padding: 0;
-}
-
-th {
+    flex-grow: 1;
     height: auto;
-    background: #007BFF;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px 0;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    overflow: hidden;
 }
 
-.heure-col {
-    width: 50px;
-    background: #f0f0f0;
-    border-right: 1px solid #ccc;
-    text-align: right;
-    padding-right: 5px;
+.calendar tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.calendar th, .calendar td {
+    border: none;
+    vertical-align: top;
+    padding: 12px 16px;
+    background: #f9fafb;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.03);
+    transition: background-color 0.3s ease;
+    height: 100%;
+    font-size: 14px;
+    color: #334155;
+}
+
+.calendar th {
+    background-color: #64748b;
+    font-weight: 700;
+    color: #f1f5f9;
+    text-align: center;
+    padding: 16px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 3px 8px rgba(100, 110, 140, 0.3);
     user-select: none;
-    font-size: 0.8em;
 }
 
 .jour-col {
-    width: calc((100% - 50px) / 5);
     position: relative;
-    background: #fafafa;
-}
-
-.jour-col div {
-    height: 60px;
-    border-bottom: 1px solid #eee;
-}
-
-.evenement {
-    position: absolute;
-    left: 5px;
-    right: 5px;
-    background: #4a90e2;
-    color: white;
-    border-radius: 5px;
-    padding: 4px 6px;
-    font-size: 0.85em;
-    overflow: hidden;
-    box-sizing: border-box;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: background-color 0.3s;
-    overflow-wrap: break-word;
-    user-select: none;
-}
-
-.evenement:hover {
-    background: #357ABD;
-}
-
-.evenement form {
-    margin: 5px 0 0 0;
-    text-align: right;
-}
-
-.evenement button {
-    background: #e74c3c;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 3px;
-    padding: 0 6px;
-    line-height: 1.2em;
-}
-
-.navigation {
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.navigation a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #007BFF;
-    font-weight: bold;
-}
-
-.navigation a:hover {
-    text-decoration: underline;
-}
-
-.calendar-container {
-    max-width: 900px;
-    margin: 20px auto;
-}
-
-.evenement {
-    position: absolute;
-    left: 5px;
-    right: 5px;
-    background: #7ab8f5;
-    color: #000;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-size: 0.85em;
-    overflow: hidden;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(100, 110, 140, 0.15),
+        rgba(100, 110, 140, 0.15) 2px,
+        transparent 2px,
+        transparent 60px
+    );
+    background-size: 100% 60px;
+    overflow-y: auto;
 }
 
 .heure-col {
     width: 60px;
-    vertical-align: top;
-    border-right: 1px solid #ccc;
-    padding: 0 5px;
-    font-size: 0.8em;
+    text-align: center;
+    font-weight: 600;
+    color: #7f8ea4;
+    user-select: none;
+    padding: 0;
 }
 
-.jour-col {
-    width: 160px;
-    vertical-align: top;
-    border-right: 1px solid #ccc;
-    position: relative;
+.heure-col div {
+    height: 60px;
+    line-height: 60px;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-table.calendar {
-    border-collapse: collapse;
-    width: 100%;
-    table-layout: fixed;
+.evenement {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    background-color: #22c55e;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.5);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-table.calendar th, table.calendar td {
-    border: 1px solid #ccc;
-    height: 720px; /* 12h * 60px */
-    position: relative;
+.evenement:hover {
+    background-color: #16a34a;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.7);
 }
-
-.navigation a {
-    margin: 0 10px;
-}
-
-/* Début des ajouts pour la popup */
 
 .popup-overlay {
+    background-color: rgba(0,0,0,0.4);
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);    align-items: center;
-    z-index: 999;
-    display: flex;
-}
-.popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    max-width: 90%;
-    position: relative;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    border: 2px solid #007BFF; /* bordure bleue visible */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
+.popup-content {
+    background-color: #ffffff;
+    padding: 28px 36px;
+    border-radius: 16px;
+    min-width: 320px;
+    max-width: 460px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #334155;
+}
 
 .close-btn {
     position: absolute;
-    top: 10px; right: 10px;
+    top: 12px;
+    right: 14px;
     cursor: pointer;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
+    font-size: 26px;
+    font-weight: 700;
+    color: #94a3b8;
+    transition: color 0.2s ease;
 }
 
-/* Curseur pointer pour événements cliquables */
+.close-btn:hover {
+    color: #334155;
+}
 
-.evenement {
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #475569;
+    font-size: 14px;
     cursor: pointer;
     user-select: none;
+    transition: color 0.3s ease;
 }
 
-/* Fin des ajouts pour la popup */
+label:hover {
+    color: #22c55e;
+}
+
+input[type="text"],
+select,
+textarea {
+    width: 40%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    color: #475569;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+    outline: none;
+}
+
+input[type="date"] {
+    width: 20%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    color: #475569;
+}
+
+input[type="date"]:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+    outline: none;
+    cursor: pointer;
+}
