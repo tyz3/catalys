@@ -1,8 +1,10 @@
+/* Pagination : espace et police */
 .navigation-pagination {
   margin-top: 15px;
   font-family: Arial, sans-serif;
 }
 
+/* Boutons pagination : style et transition */
 .navigation-pagination a {
   display: inline-block;
   padding: 6px 12px;
@@ -14,10 +16,12 @@
   transition: background-color 0.3s ease;
 }
 
+/* Boutons pagination au survol */
 .navigation-pagination a:hover {
   background-color: #0056b3;
 }
 
+/* Tableau : largeur et font */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -25,22 +29,26 @@ table {
   margin-top: 15px;
 }
 
+/* Cellules : bordures et padding */
 table th, table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
 
+/* En-têtes : fond bleu et texte blanc */
 table th {
   background-color: #007BFF;
   color: white;
   font-weight: bold;
 }
 
+/* Lignes paires : fond clair */
 table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
+/* Survol des lignes */
 table tr:hover {
   background-color: #f1f1f1;
 }

@@ -1,20 +1,27 @@
 <?php
-ini_set('memory_limit', '1024M');
+// augmente limite mémoire et temps max d'exécution pour éviter erreurs sur gros fichiers
+ini_set('memory_limit', '1024m');
 set_time_limit(120);
 
-$dbFile = __DIR__ . '/données/agenda.sqlite';
-if (!file_exists($dbFile)) {
-    die("❌ Base de données SQLite manquante.");
+// chemin vers la base sqlite
+$dbfile = __dir__ . '/données/agenda.sqlite';
+
+// vérifie si la base existe, sinon stop
+if (!file_exists($dbfile)) {
+    die("❌ base de données sqlite manquante.");
 }
 
-$pdo = new PDO('sqlite:' . $dbFile);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// connexion pdo sqlite avec gestion des erreurs
+$pdo = new pdo('sqlite:' . $dbfile);
+$pdo->setAttribute(pdo::ATTR_ERRMODE, pdo::ERRMODE_EXCEPTION);
 
-$tables = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+// récupère toutes les tables disponibles dans la base
+$tables = $pdo->query("select name from sqlite_master where type='table' order by name")->fetchAll(pdo::FETCH_COLUMN);
 
+// table sélectionnée via get, sinon la première disponible ou null
+$tablechoisie = $_GET['table'] ?? $tables[0] ?? null;
 
-$tableChoisie = $_GET['table'] ?? $tables[0] ?? null;
-
+// pagination : limite, page courante et offset
 $limit = 500;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $limit;
@@ -23,22 +30,25 @@ $total = 0;
 $rows = [];
 $pages = 1;
 
-if ($tableChoisie) {
+// si une table est choisie, récupère le nombre total de lignes et les données de la page courante
+if ($tablechoisie) {
     try {
-        $total = $pdo->query("SELECT COUNT(*) FROM \"$tableChoisie\"")->fetchColumn();
+        $total = $pdo->query("select count(*) from \"$tablechoisie\"")->fetchColumn();
         $pages = max(1, ceil($total / $limit));
-        $stmt = $pdo->query("SELECT * FROM \"$tableChoisie\" LIMIT $limit OFFSET $offset");
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
+        $stmt = $pdo->query("select * from \"$tablechoisie\" limit $limit offset $offset");
+        $rows = $stmt->fetchAll(pdo::FETCH_ASSOC);
+    } catch (exception $e) {
+        // en cas d'erreur (ex : table inexistante), vide les données
         $total = 0;
         $rows = [];
         $pages = 1;
     }
 }
 
-echo "<h3>📋 Tables dans la base :</h3><ul>";
+// affiche la liste des tables avec leur nombre de lignes
+echo "<h3>📋 tables dans la base :</h3><ul>";
 foreach ($tables as $t) {
-    $count = $pdo->query("SELECT COUNT(*) FROM \"$t\"")->fetchColumn();
+    $count = $pdo->query("select count(*) from \"$t\"")->fetchColumn();
     echo "<li><strong>" . htmlspecialchars($t) . "</strong> – $count lignes</li>";
 }
 echo "</ul>";
@@ -47,35 +57,37 @@ echo "</ul>";
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-      <link rel="stylesheet" href="lire_excel.css">
-
-    <title>Affichage des tables SQLite</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="lire_excel.css">
+    <title>affichage des tables sqlite</title>
 </head>
 <body>
+    <!-- formulaire de sélection de table avec soumission automatique -->
     <form method="get">
-        <label for="table">📂 Choisir une table :</label>
+        <label for="table">📂 choisir une table :</label>
         <select name="table" id="table" onchange="this.form.submit()">
             <?php foreach ($tables as $t): ?>
-                <option value="<?= htmlspecialchars($t) ?>" <?= $t === $tableChoisie ? 'selected' : '' ?>>
+                <option value="<?= htmlspecialchars($t) ?>" <?= $t === $tablechoisie ? 'selected' : '' ?>>
                     <?= htmlspecialchars($t) ?>
                 </option>
             <?php endforeach; ?>
         </select>
     </form>
 
+    <!-- affichage de la table sélectionnée avec pagination -->
     <?php if ($rows): ?>
-        <h2>🔎 Aperçu de la table « <?= htmlspecialchars($tableChoisie) ?> » (Page <?= $page ?> / <?= $pages ?>)</h2>
-                <div class="navigation-pagination">
+        <h2>🔎 aperçu de la table « <?= htmlspecialchars($tablechoisie) ?> » (page <?= $page ?> / <?= $pages ?>)</h2>
+        <div class="navigation-pagination">
             <?php if ($page > 1): ?>
-                <a href="?table=<?= urlencode($tableChoisie) ?>&page=<?= $page - 1 ?>">← Précédent</a>
+                <a href="?table=<?= urlencode($tablechoisie) ?>&page=<?= $page - 1 ?>">← précédent</a>
             <?php endif; ?>
 
             <?php if ($page < $pages): ?>
-                <a href="?table=<?= urlencode($tableChoisie) ?>&page=<?= $page + 1 ?>">Suivant →</a>
+                <a href="?table=<?= urlencode($tablechoisie) ?>&page=<?= $page + 1 ?>">suivant →</a>
             <?php endif; ?>
-            </div>
+        </div>
 
+        <!-- tableau html affichant les données -->
         <table border="1" cellpadding="4" cellspacing="0">
             <thead>
                 <tr>
@@ -94,10 +106,10 @@ echo "</ul>";
                 <?php endforeach; ?>
             </tbody>
         </table>
-
         
-    <?php elseif ($tableChoisie): ?>
-        <p style="color:red;">Aucune donnée dans cette table.</p>
+    <?php elseif ($tablechoisie): ?>
+        <!-- message si table vide -->
+        <p style="color:red;">aucune donnée dans cette table.</p>
     <?php endif; ?>
 </body>
 </html>

@@ -1,50 +1,47 @@
-
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: arial, sans-serif; /* police simple et lisible */
+    background-color: #f4f4f4; /* fond gris clair */
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    justify-content: center; /* centre horizontalement */
+    align-items: center; /* centre verticalement */
+    height: 100vh; /* prend toute la hauteur de la fenêtre */
 }
 
-
 .form-container {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white; /* fond blanc */
+    padding: 30px; /* espace à l’intérieur */
+    border-radius: 8px; /* coins arrondis */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* ombre légère */
     width: 100%;
-    max-width: 400px;
+    max-width: 400px; /* max largeur du formulaire */
 }
 
 h2 {
     text-align: center;
-    color: #0000FF;
+    color: #0000ff; /* titre bleu */
 }
 
 label {
     font-size: 1rem;
     margin-bottom: 5px;
-    color: #555;
-    display: block;
+    color: #555; /* gris foncé */
+    display: block; /* label sur sa ligne */
 }
 
 input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    width: 100%; /* prend toute la largeur dispo */
+    padding: 10px; /* espace à l’intérieur */
+    margin: 8px 0; /* espacement vertical */
+    border: 1px solid #ccc; /* bord gris clair */
+    border-radius: 4px; /* coins arrondis */
+    box-sizing: border-box; /* inclut padding dans largeur */
     font-size: 1rem;
 }
 
-
 input[type="submit"] {
-    background-color: #0000FF;
+    background-color: #0000ff; /* bouton bleu */
     color: white;
     padding: 12px 20px;
     border: none;
@@ -55,32 +52,30 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #0000FF;
+    background-color: #0000ff; /* pas de changement au hover */
 }
-
 
 button {
     display: flex;
     align-items: center;
-    justify-content: center; 
-    padding: 14px 24px; 
-    font-size: 18px; 
+    justify-content: center;
+    padding: 14px 24px;
+    font-size: 18px;
     cursor: pointer;
     border: none;
-    background-color: #0008FF;
+    background-color: #0008ff; /* bleu un peu plus foncé */
     color: white;
-    margin: 20px auto; 
-    align-self: center; 
-    border-radius: 40px ;
+    margin: 20px auto;
+    align-self: center;
+    border-radius: 40px; /* bouton très arrondi */
 }
 
 button img {
-    width: 16px; 
-    height: 16px; 
-    margin-right: 8px; 
+    width: 16px;
+    height: 16px;
+    margin-right: 8px; /* espace entre icone et texte */
 }
 
 button:hover {
-    background-color: #0008FF; 
+    background-color: #0008ff; /* pas de changement au hover */
 }
-

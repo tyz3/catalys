@@ -1,12 +1,14 @@
 <?php
 session_start();
+
 try {
+    // connexion à la base sqlite
     $pdo = new PDO('sqlite:' . __DIR__ . '/données/agenda.sqlite');
 } catch (PDOException $e) {
-    die("Erreur connexion base : " . $e->getMessage());
+    die("erreur connexion base : " . $e->getMessage());
 }
 
-// Récupération liste conseillers fusionnée et distincte
+// récupérer tous les conseillers uniques des deux tables
 $sqlConseillers = "
     SELECT DISTINCT conseiller AS conseiller FROM seances WHERE conseiller IS NOT NULL AND conseiller != ''
     UNION
@@ -15,23 +17,29 @@ $sqlConseillers = "
 ";
 $stmt = $pdo->query($sqlConseillers);
 $conseillers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
 if (empty($conseillers)) {
-    die("Aucun conseiller trouvé en base.");
+    die("aucun conseiller trouvé en base.");
 }
 
+// conseiller choisi en get ou post, sinon premier de la liste
 $conseillerSelectionne = $_GET['conseiller'] ?? $_POST['conseiller'] ?? $conseillers[0];
 
+// tableau en session pour stocker les événements ajoutés à la volée
 if (!isset($_SESSION['evenements'])) {
     $_SESSION['evenements'] = [];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // récupérer données du formulaire
     $date = $_POST['date'] ?? null;
     $evenement = trim($_POST['evenement'] ?? '');
     $heureDebut = $_POST['heuredebut'] ?? '';
     $heureFin = $_POST['heurefin'] ?? '';
     $delete = $_POST['delete'] ?? null;
     $conseiller = $_POST['conseiller'] ?? $conseillerSelectionne;
+
+    // ajout d'un événement en session
     if ($date && $conseiller && $evenement !== '' && $delete === null) {
         $_SESSION['evenements'][$conseiller][$date][] = [
             'heuredebut' => $heureDebut,
@@ -39,29 +47,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'texte' => $evenement,
         ];
     }
+    // suppression d'un événement en session
     if ($date && $conseiller && $delete !== null && isset($_SESSION['evenements'][$conseiller][$date][$delete])) {
         unset($_SESSION['evenements'][$conseiller][$date][$delete]);
+        // réindexer le tableau
         $_SESSION['evenements'][$conseiller][$date] = array_values($_SESSION['evenements'][$conseiller][$date]);
+        // supprimer la date si vide
         if (count($_SESSION['evenements'][$conseiller][$date]) === 0) {
             unset($_SESSION['evenements'][$conseiller][$date]);
         }
     }
 }
 
+// gérer la semaine affichée (0 = semaine actuelle)
 $semaine = (int)($_GET['semaine'] ?? 0);
 $ajd = new DateTime();
+
 if (!empty($_GET['dateChoisie'])) {
     $dateChoisie = DateTime::createFromFormat('Y-m-d', $_GET['dateChoisie']);
     if ($dateChoisie) {
         $ajd = clone $dateChoisie;
     }
 }
+
+// ajuster la date selon la semaine choisie
 $ajd->modify("{$semaine} weeks");
-$ajd->modify('-' . ($ajd->format('N') - 1) . ' days'); // lundi de la semaine
+// reculer au lundi de la semaine
+$ajd->modify('-' . ($ajd->format('N') - 1) . ' days');
+
 $jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
 $debutSemaine = $ajd->format('Y-m-d');
 $finSemaine = (clone $ajd)->modify('+4 days')->format('Y-m-d');
 
+// requête pour récupérer les événements du conseiller cette semaine
 $sql = "
     SELECT 
         'seance' AS source,
@@ -121,6 +139,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $evenementsBase[$dateKey][] = $row;
 }
 
+// convertit heure 'HH:MM' en minutes depuis 00:00
 function heureToMinutes(string $heure): int {
     $parts = explode(':', $heure);
     return ((int)($parts[0] ?? 0) * 60) + ((int)($parts[1] ?? 0));
@@ -138,6 +157,7 @@ function heureToMinutes(string $heure): int {
 
 <div class="calendar-container">
 
+    <!-- Formulaire pour choisir le conseiller affiché -->
     <form method="GET" style="margin-bottom: 1em;">
         <label for="conseiller">Choisir un conseiller :</label>
         <select name="conseiller" id="conseiller" onchange="this.form.submit()">
@@ -147,9 +167,11 @@ function heureToMinutes(string $heure): int {
                 </option>
             <?php endforeach; ?>
         </select>
+        <!-- On conserve la semaine affichée lors du changement de conseiller -->
         <input type="hidden" name="semaine" value="<?= $semaine ?>" />
     </form>
 
+    <!-- Formulaire pour choisir une date précise afin d'afficher la semaine correspondante -->
     <form method="GET" style="margin-bottom: 1em;">
         <input type="hidden" name="conseiller" value="<?= htmlspecialchars($conseillerSelectionne) ?>" />
         <label for="dateChoisie">Choisir une date :</label>
@@ -157,32 +179,38 @@ function heureToMinutes(string $heure): int {
         <button type="submit">Voir la semaine</button>
     </form>
 
+    <!-- Titre affichant le conseiller sélectionné et la date du lundi de la semaine -->
     <h2>Agenda de <?= htmlspecialchars($conseillerSelectionne) ?> - Semaine du <?= $ajd->format('d/m/Y') ?></h2>
 
+    <!-- Navigation entre les semaines -->
     <div class="navigation">
         <a href="?conseiller=<?= urlencode($conseillerSelectionne) ?>&semaine=<?= $semaine - 1 ?>">← Semaine précédente</a>
         <a href="?conseiller=<?= urlencode($conseillerSelectionne) ?>&semaine=0">Aujourd'hui</a>
         <a href="?conseiller=<?= urlencode($conseillerSelectionne) ?>&semaine=<?= $semaine + 1 ?>">Semaine suivante →</a>
     </div>
 
+    <!-- Tableau représentant l'agenda sous forme d'une grille jour/heure -->
     <table class="calendar">
         <thead>
             <tr>
-                <th class="heure-col"></th>
+                <th class="heure-col"></th> <!-- Colonne vide pour les heures -->
                 <?php for ($i = 0; $i < 5; $i++):
                     $jour = (clone $ajd)->modify("+$i days"); ?>
+                    <!-- En-têtes des jours avec jour de la semaine et date -->
                     <th class="jour-col"><?= $jours[$i] ?><br><?= $jour->format('d/m') ?></th>
                 <?php endfor; ?>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <!-- Colonne des heures (de 8h à 20h) -->
                 <td class="heure-col">
                     <?php for ($h = 8; $h <= 20; $h++): ?>
                         <div style="height:60px; line-height:60px;"><?= $h ?>:00</div>
                     <?php endfor; ?>
                 </td>
 
+                <!-- Colonnes des jours avec événements placés en position absolue selon heure -->
                 <?php for ($i = 0; $i < 5; $i++):
                     $jour = (clone $ajd)->modify("+$i days");
                     $d = $jour->format('Y-m-d'); ?>
@@ -191,7 +219,7 @@ function heureToMinutes(string $heure): int {
                         <?php
                         $evenementsAffiches = [];
 
-                        // Événements issus de la base
+                        // Ajout des événements depuis la base de données
                         if (isset($evenementsBase[$d])) {
                             foreach ($evenementsBase[$d] as $ev) {
                                 if (heureToMinutes($ev['heurefin']) > heureToMinutes($ev['heuredebut'])) {
@@ -200,7 +228,7 @@ function heureToMinutes(string $heure): int {
                             }
                         }
 
-                        // Événements en session ajoutés à la volée
+                        // Ajout des événements créés en session (non enregistrés en base)
                         if (isset($_SESSION['evenements'][$conseillerSelectionne][$d])) {
                             foreach ($_SESSION['evenements'][$conseillerSelectionne][$d] as $ev) {
                                 if (heureToMinutes($ev['heurefin']) > heureToMinutes($ev['heuredebut'])) {
@@ -223,13 +251,15 @@ function heureToMinutes(string $heure): int {
                             }
                         }
 
+                        // Tri des événements par heure de début
                         usort($evenementsAffiches, fn($a, $b) => heureToMinutes($a['heuredebut']) <=> heureToMinutes($b['heuredebut']));
 
+                        // Affichage des événements dans la cellule du jour
                         foreach ($evenementsAffiches as $index => $ev):
                             $debut = $ev['heuredebut'] ?? '08:00';
                             $fin = $ev['heurefin'] ?? '09:00';
-                            $top = (heureToMinutes($debut) - 480); // 480 = 8*60 minutes
-                            $height = max(heureToMinutes($fin) - heureToMinutes($debut), 30);
+                            $top = (heureToMinutes($debut) - 480); // Position verticale en px (8h = 480min)
+                            $height = max(heureToMinutes($fin) - heureToMinutes($debut), 30); // hauteur min 30px
 
                             $classAbsent = ($ev['absence'] == 1) ? ' absent' : '';
                             $classSource = 'evenement-' . htmlspecialchars($ev['source']);
@@ -261,6 +291,7 @@ function heureToMinutes(string $heure): int {
 
     <hr />
 
+    <!-- Formulaire pour ajouter un nouvel événement -->
     <form method="POST" style="margin-top: 1em;">
         <input type="hidden" name="conseiller" value="<?= htmlspecialchars($conseillerSelectionne) ?>" />
         <label for="date">Date :</label>
@@ -280,7 +311,7 @@ function heureToMinutes(string $heure): int {
 
 </div>
 
-<!-- Popup info -->
+<!-- Popup affichant les détails d'un événement au clic -->
 <div id="popup" style="display:none; position:fixed; top:50px; left:50%; transform:translateX(-50%); background:#fff; border:1px solid #ccc; padding:1em; max-width:400px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:100;">
     <button id="closePopup" style="float:right;">X</button>
     <h3>Détails de l'événement</h3>
@@ -294,6 +325,7 @@ function heureToMinutes(string $heure): int {
     <p><strong>Absence :</strong> <span id="popup-absence"></span></p>
 </div>
 
+<!-- Script JS pour gérer l'ouverture/fermeture du popup d'infos -->
 <script>
 document.querySelectorAll('.event').forEach(div => {
     div.addEventListener('click', () => {

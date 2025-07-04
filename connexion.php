@@ -1,6 +1,7 @@
 <?php
-session_start();
+session_start(); // Démarre la session
 
+// Connexion à la base
 $dns = 'mysql:host=localhost;dbname=catalys';
 $utilisateur = 'root';
 $motDePasse = '';
@@ -9,26 +10,28 @@ try {
     $connexion = new PDO($dns, $utilisateur, $motDePasse);
     $connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (Exception $e) {
-    echo "Connexion à MySQL impossible : ", $e->getMessage();
+    echo "Erreur BDD : ", $e->getMessage();
     die();
 }
 
 $erreur = "";
 
+// Si formulaire envoyé
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['idEmploye']) && !empty($_POST['mdpEmploye'])) {
-        $idEmploye = $_POST['idEmploye'];  
-        $mdpEmploye = $_POST['mdpEmploye'];  
+        $idEmploye = $_POST['idEmploye'];
+        $mdpEmploye = $_POST['mdpEmploye'];
 
+        // Mot de passe en clair ici, à changer
         $sql = "SELECT * FROM Employes WHERE idEmploye = :idEmploye AND mdpEmploye = :mdpEmploye";
         $stmt = $connexion->prepare($sql);
-        $stmt->bindParam(':idEmploye', $idEmploye, PDO::PARAM_STR);
-        $stmt->bindParam(':mdpEmploye', $mdpEmploye, PDO::PARAM_STR);
+        $stmt->bindParam(':idEmploye', $idEmploye);
+        $stmt->bindParam(':mdpEmploye', $mdpEmploye);
 
         try {
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "Erreur lors de l'exécution de la requête : " . $e->getMessage();
+            echo "Erreur requête : " . $e->getMessage();
             die();
         }
 
@@ -40,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $erreur = "Identifiant ou mot de passe incorrect.";
         }
     } else {
-        $erreur = "Veuillez remplir tous les champs.";
+        $erreur = "Champs manquants.";
     }
 }
 ?>
@@ -75,5 +78,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
-
-
